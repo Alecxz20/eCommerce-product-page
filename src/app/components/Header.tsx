@@ -11,6 +11,8 @@ import garbage from '@/assets/images/icon-delete.svg'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { IoClose } from 'react-icons/io5'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useAtom } from 'jotai'
+import { productAtom, quantityAtom } from '../atom'
 
 interface MyLink {
   href: string
@@ -46,6 +48,8 @@ export default function Header() {
   const [isCart, setIsCart] = useState(false)
   const [isLateralMenu, setIsLateralMenu] = useState(false)
   const [animationParent] = useAutoAnimate()
+  const [product, setProduct] = useAtom(productAtom)
+  const [quantity, setQuantity] = useAtom(quantityAtom)
 
   return (
     <header ref={animationParent}>
@@ -73,6 +77,10 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4 relative">
+          {product && <div className="w-4 h-4 bg-red-600 absolute top-5 left-2 rounded-full text-xs flex justify-center items-center text-white font-bold">
+            {quantity}
+          </div>}
+          
           <MdOutlineShoppingCart
             className="h-6 w-6 cursor-pointer"
             onClick={() => setIsCart(!isCart)}
@@ -91,37 +99,56 @@ export default function Header() {
 }
 
 function CartUI() {
+  const [product, setProduct] = useAtom(productAtom)
+
+  function deleteProduct() {
+    setProduct(null)
+  }
+
   return (
-    <div className="absolute top-20 right-0 p-2 w-[300px] flex flex-col gap-4 shadow-lg rounded-lg">
+    <div className="absolute top-20 right-0 p-2 w-[300px] flex flex-col gap-4 shadow-lg rounded-lg bg-white z-10">
       <h3 className="font-bold text-lg">Cart</h3>
       <hr />
       <section className="flex gap-8 items-center text-gray-400 justify-between text-sm">
-        <Image
-          className="h-10 w-auto rounded-lg"
-          alt="product image thumbnail"
-          src={productImage}
-        />
-        <div>
-          <p className="">Automn Limited Edition</p>
-          <p>
-            $125.00 x 4{' '}
-            <span className="text-black font-semibold">$500.00</span>
-          </p>
-        </div>
-        <div>
-          <Image
-            alt="trash can icon"
-            src={garbage}
-            className="cursor-pointer fill-red-600"
-          />
-        </div>
+        {product ? (
+          <>
+            <Image
+              className="h-10 w-auto rounded-lg"
+              alt="product image thumbnail"
+              src={productImage}
+            />
+            <div>
+              <p>{product?.name}</p>
+              <p>
+                <span>
+                  ${product?.price}.00 x {product?.quantity} = {}
+                </span>
+                <span className="text-black font-semibold">
+                  ${product?.quantity * product?.price}.00
+                </span>
+              </p>
+            </div>
+            <div>
+              <Image
+                onClick={deleteProduct}
+                alt="trash can icon"
+                src={garbage}
+                className="cursor-pointer"
+              />
+            </div>
+          </>
+        ) : (
+          <p>Your cart is empty</p>
+        )}
       </section>
-      <button
-        type="button"
-        className="bg-orange-400 text-white rounded-lg py-2 pointer hover:bg-orange-500"
-      >
-        Checkout
-      </button>
+      {product && (
+        <button
+          type="button"
+          className="bg-orange-400 text-white rounded-lg py-2 pointer hover:bg-orange-500"
+        >
+          Checkout
+        </button>
+      )}
     </div>
   )
 }
