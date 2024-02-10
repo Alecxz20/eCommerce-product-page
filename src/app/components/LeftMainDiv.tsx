@@ -34,14 +34,14 @@ export default function LeftMainDiv() {
   }
 
   return (
-    <div ref={animationParent} className="flex flex-col gap-4 relative">
+    <div ref={animationParent} className="flex flex-col gap-4 relative items-center">
       <Image
-        className="w-[384px] h-[384px] rounded-3xl cursor-pointer"
+        className="max-w-[384px]  rounded-3xl cursor-pointer aspect-square"
         alt="product image"
         src={mainImage}
         onClick={() => setIsModal(true)}
       />
-      <div className="flex justify-between w-[384px]">
+      <div className="flex justify-between md:w-[384px]">
         {images.map((image, index) => (
           <Image
             onClick={() => setMainImage(image)}
